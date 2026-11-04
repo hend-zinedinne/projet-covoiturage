@@ -12,14 +12,14 @@ require_once __DIR__ . "/../model/repository/compteRepository.php";
 require_once __DIR__ . "/../view/view.php";
 
 // Traitement de l'actin "action=creerCompte"
-function afficherCreerCompte(PDO $pdo): void
+function afficherCreerCompte(PDO $connexion): void
 {
-    $errors      = [];
-    $nom       = '';
-    $prenom = '';
-    $email = '';
-    $numTel = '';
-    $mdp = '';
+    $erreurs         = [];
+    $nom             = '';
+    $prenom          = '';
+    $email           = '';
+    $numTel          = '';
+    $mdp             = '';
     $codeInscription = 0;
 
     // Soumission du formulaire
@@ -35,30 +35,34 @@ function afficherCreerCompte(PDO $pdo): void
 
         // Validation des données
         if ($nom === '') {
-            $errors[] = "Le nom est obligatoire.";
+            $erreurs[] = "Le nom est obligatoire.";
         }
         if ($prenom === '') {
-            $errors[] = "Le prénom est obligatoire.";
+            $erreurs[] = "Le prénom est obligatoire.";
         }
         if ($email === '') {
-            $errors[] = "Le prénom est obligatoire.";
+            $erreurs[] = "L'adresse mail est obligatoire.";
+        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $erreurs[] = "L'adresse mail est invalide.";
         }
         if ($numTel === '') {
-            $errors[] = "Le prénom est obligatoire.";
+            $erreurs[] = "Le numéro de téléphone est obligatoire.";
+        } elseif (verifierNumero($numTel) === false) {
+            $erreurs[] = "Le numéro de téléphone est invalide.";
         }
         if ($mdp === '') {
-            $errors[] = "Le prénom est obligatoire.";
+            $erreurs[] = "Le mot de passe est obligatoire.";
         }
         if ($codeInscription !== getCodeInscription($connexion)) {
-            $errors[] = "Le prénom est obligatoire.";
+            $erreurs[] = "Le code d'inscription est incorrect..";
         }
 
         // Insertion en base de données si validation OK
-        if ($errors === []) {
+        if ($erreurs === []) {
             // appel au modèle pour insérer les données
-            insertFilm($pdo, $titre, $realisateur);
+            insertEnseignant($connexion, $nom, $prenom, $email, $numTel, password_hash($mdp, PASSWORD_DEFAULT));
             // redirection vers la liste des films
-            header('Location: index.php?action=list');
+            header('Location: index.php?action=bienvenue');
             exit();
         }
 
@@ -67,17 +71,18 @@ function afficherCreerCompte(PDO $pdo): void
     // Afficher le formulaire (VUE)
     //require_once __DIR__ . '/../../views/films/create.php';
 
-    render("films/create", [
-        "title"       => "Ajouter un film",
-        "errors"      => $errors,
-        "titre"       => $titre,
-        "realisateur" => $realisateur,
+    afficherVue("creerCompte/index", [
+        "title"  => "Créer votre compte",
+        "erreurs" => $erreurs,
+        "nom"    => $nom,
+        "prenom" => $prenom,
+        "email"  => $email,
+        "numTel" => $numTel,
+        "mdp"    => $mdp,
+        "codeInscription"   => $codeInscription,
     ]);
 }
 
-function deleteFilm(PDO $pdo): void {
-    $filmID = intval($_POST["film-id"]);
-    deleteFilmFromDB($pdo, $filmID);
-    header("Location: index.php?action=list");
-    exit();
+function verifierNumero($phone){
+    return preg_match('/^[0-9]{10}+$/', $phone);
 }
