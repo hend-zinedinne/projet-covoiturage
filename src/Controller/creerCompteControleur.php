@@ -20,7 +20,7 @@ function afficherCreerCompte(PDO $connexion): void
     $email           = '';
     $numTel          = '';
     $mdp             = '';
-    $codeInscription = 0;
+    $codeInscription = '';
 
     // Soumission du formulaire
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -31,8 +31,9 @@ function afficherCreerCompte(PDO $connexion): void
         $email = trim($_POST['email']);
         $numTel = trim($_POST['numTel']);
         $mdp = trim($_POST['mdp']);
-        $codeInscription = intval($_POST['code']);
+        $codeInscription = trim($_POST['code']);
 
+        $emailValide = trouverEnseignantfromEmail($connexion, $email);
         // Validation des données
         if ($nom === '') {
             $erreurs[] = "Le nom est obligatoire.";
@@ -44,6 +45,8 @@ function afficherCreerCompte(PDO $connexion): void
             $erreurs[] = "L'adresse mail est obligatoire.";
         } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
             $erreurs[] = "L'adresse mail est invalide.";
+        } elseif ($emailValide) {
+            $erreurs[] = "Ce compte est déjà pris par un autre utilisateur.";
         }
         if ($numTel === '') {
             $erreurs[] = "Le numéro de téléphone est obligatoire.";
@@ -53,8 +56,8 @@ function afficherCreerCompte(PDO $connexion): void
         if ($mdp === '') {
             $erreurs[] = "Le mot de passe est obligatoire.";
         }
-        if ($codeInscription !== getCodeInscription($connexion)) {
-            $erreurs[] = "Le code d'inscription est incorrect..";
+        if ($codeInscription !== strval(getCodeInscription($connexion)["code"])) {
+            $erreurs[] = "Le code d'inscription est incorrect.";
         }
 
         // Insertion en base de données si validation OK
@@ -73,6 +76,7 @@ function afficherCreerCompte(PDO $connexion): void
 
     afficherVue("creerCompte/index", [
         "title"  => "Créer votre compte",
+        "pageCourante" => "creerCompte",
         "erreurs" => $erreurs,
         "nom"    => $nom,
         "prenom" => $prenom,
@@ -83,6 +87,6 @@ function afficherCreerCompte(PDO $connexion): void
     ]);
 }
 
-function verifierNumero($phone){
-    return preg_match('/^[0-9]{10}+$/', $phone);
+function verifierNumero(string $phone):bool{
+    return preg_match("#[0][67][- \.?]?([0-9][0-9][- \.?]?){4}$#", $phone);
 }
