@@ -17,13 +17,13 @@ function afficherSeConnecter(PDO $connexion): void
     $email = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email = trim((string) ($_POST['email'] ?? ''));
-        $mdp = (string) ($_POST['mdp'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $mdp = ($_POST['mdp'] ?? '');
 
         if ($email === '') {
-            $erreurs[] = "L'adresse électronique est obligatoire.";
+            $erreurs[] = "L'adresse mail est obligatoire.";
         } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $erreurs[] = "L'adresse électronique est invalide.";
+            $erreurs[] = "L'adresse mail est invalide.";
         }
 
         if ($mdp === '') {
@@ -31,7 +31,28 @@ function afficherSeConnecter(PDO $connexion): void
         }
 
         if ($erreurs === []) {
-            $erreurs[] = "La vérification des identifiants n'est pas encore configurée.";
+            $utilisateur = trouverEnseignantParEmail($connexion, $email);
+
+            if ($utilisateur === null || !password_verify($mdp, $utilisateur['mdpEnseignant'])) {
+                $erreurs[] = "Adresse mail ou mot de passe incorrect.";
+            } else {
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+
+                session_regenerate_id(true);
+                $_SESSION['enseignant'] = [
+                    'id' => $utilisateur['idEnseignant'],
+                    'nom' => $utilisateur['nomEnseignant'],
+                    'prenom' => $utilisateur['prenomEnseignant'],
+                    'email' => $utilisateur['mailEnseignant'],
+                ];
+
+                $_SESSION['alert'] = "Connexion réussie. Bienvenue, " . $utilisateur['prenomEnseignant'] . " !";
+
+                header('Location: index.php?action=bienvenue');
+                exit();
+            }
         }
     }
 

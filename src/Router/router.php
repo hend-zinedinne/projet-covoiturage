@@ -33,6 +33,10 @@ function afficherErreur405(array $methodesAutorisees = [], string $methode = '')
 
 function routerRequete(PDO $connexion): void
 {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
     // Le fichier retourne un tableau : le relire à chaque appel du routeur.
     $routes = require __DIR__ . '/../../config/routes.php';
     $action = $_GET['action'] ?? 'bienvenue';
@@ -47,6 +51,12 @@ function routerRequete(PDO $connexion): void
     if (!in_array($methode, $routes[$action], true)) {
         afficherErreur405($routes[$action], $methode);
         return;
+    }
+
+    if (
+        in_array($action, ['creerCompte', 'seConnecter'], true) && isset($_SESSION['enseignant']['id'])) {
+        header('Location: index.php?action=bienvenue');
+        exit();
     }
 
     match ($action) {

@@ -81,6 +81,8 @@ function afficherCreerCompte(PDO $connexion): void
                  ]);
             };
             // redirection vers la page de bienvenue
+            session_start();
+            $_SESSION['alert'] = "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.";
             header('Location: index.php?action=bienvenue');
             exit();
         }

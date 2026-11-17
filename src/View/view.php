@@ -6,6 +6,11 @@
  */
 function afficherVue(string $vue, array $donnees = []): void
 {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    $enseignantConnecte = $_SESSION['enseignant'] ?? null;
     extract($donnees, EXTR_SKIP);
     $titre = $titre ?? 'Application de covoiturage';
     $pageCourante = $pageCourante ?? '';

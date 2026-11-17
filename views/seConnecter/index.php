@@ -1,11 +1,12 @@
 <section aria-labelledby="titre-seconnecter">
     <h1 id="titre-seconnecter">Se connecter</h1>
 
-    <?php if (!empty($erreurs)): ?>
-        <div class="alert alert-error" role="alert">
+    <?php if ($erreurs !== []): ?>
+        <div class="alert alert-error">
+            <strong>Veuillez corriger les erreurs suivantes :</strong>
             <ul>
                 <?php foreach ($erreurs as $erreur): ?>
-                    <li><?= htmlspecialchars($erreur) ?></li>
+                <li><?php echo htmlspecialchars($erreur) ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
