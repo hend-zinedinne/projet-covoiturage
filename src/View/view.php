@@ -11,6 +11,12 @@ function afficherVue(string $vue, array $donnees = []): void
     }
 
     $enseignantConnecte = $_SESSION['enseignant'] ?? null;
+    if (is_array($enseignantConnecte)) {
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+    }
+
     extract($donnees, EXTR_SKIP);
     $titre = $titre ?? 'Application de covoiturage';
     $pageCourante = $pageCourante ?? '';

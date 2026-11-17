@@ -63,6 +63,16 @@ header {
     color: #ffffff;
 }
 
+.nav-bar form {
+    margin: 0;
+}
+
+.nav-bar button {
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
 a:focus-visible {
     outline: 3px solid #1d4ed8;
     outline-offset: 4px;
