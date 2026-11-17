@@ -7,9 +7,9 @@
 // Responsabilité : coordonner le traitement d'une requête lié à la notion de film
 
 // Accès au modèle
-require_once __DIR__ . "/../model/repository/compteRepository.php";
+require_once __DIR__ . "/../Model/Repository/compteRepository.php";
 // Accès à la fonction de rendu de vues (render)
-require_once __DIR__ . "/../view/view.php";
+require_once __DIR__ . "/../View/view.php";
 
 // Traitement de l'actin "action=creerCompte"
 function afficherCreerCompte(PDO $connexion): void
@@ -80,7 +80,7 @@ function afficherCreerCompte(PDO $connexion): void
                 "code" => $codeInscription,
                  ]);
             };
-            // redirection vers la liste des films
+            // redirection vers la page de bienvenue
             header('Location: index.php?action=bienvenue');
             exit();
         }

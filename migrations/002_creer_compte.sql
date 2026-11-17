@@ -4,5 +4,5 @@ CREATE TABLE enseignants (
     prenomEnseignant TEXT,
     mailEnseignant TEXT,
     numTelEnseignant TEXT,
-    mdpEnseignant TEXT,
+    mdpEnseignant TEXT
 );
