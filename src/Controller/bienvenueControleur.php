@@ -7,5 +7,6 @@ function afficherBienvenue(PDO $connexion): void
     afficherVue('bienvenue/index', [
         'titre' => 'Application de covoiturage',
         'pageCourante' => 'bienvenue',
+        'alert' => "Bienvenue ! L'application a démarré avec succès."
     ]);
 }

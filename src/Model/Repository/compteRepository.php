@@ -4,7 +4,7 @@ function getCodeInscription(PDO $connexion) {
     $sql = "SELECT code FROM parametres";
 
     $requete = $connexion->query($sql);
-    return $requete->fetch();
+    return $requete->fetch()["code"];
 }
 
 function trouverEnseignantfromEmail(PDO $connexion, string $email) {
@@ -13,7 +13,7 @@ function trouverEnseignantfromEmail(PDO $connexion, string $email) {
     $requete->execute(["email"=> $email]);
     return $requete->fetch();
 }
-function insertEnseignant(PDO $connexion, string $nom, string $prenom, string $email, string $numTel, string $mdp) {
+function insertEnseignant(PDO $connexion, string $nom, string $prenom, string $email, string $numTel, string $mdp) : bool {
     $sql = "INSERT INTO enseignants (
     idEnseignant,
     nomEnseignant,
@@ -23,7 +23,7 @@ function insertEnseignant(PDO $connexion, string $nom, string $prenom, string $e
     mdpEnseignant)
     VALUES(:id,:nom,:prenom,:email,:numTel,:mdp)";
     $requete = $connexion->prepare($sql);
-    $requete->execute(
+    return $requete->execute(
         [
         "id"=>time(),
         "nom"=> $nom,

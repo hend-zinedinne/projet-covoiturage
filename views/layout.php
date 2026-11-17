@@ -20,6 +20,7 @@
         <nav class="nav-bar" aria-label="Navigation principale">
             <a href="index.php?action=bienvenue"<?= $pageCourante === 'bienvenue' ? ' class="active" aria-current="page"' : '' ?>>Bienvenue</a>
             <a href="index.php?action=creerCompte"<?= $pageCourante === 'creerCompte' ? ' class="active" aria-current="page"' : '' ?>>Créer votre compte</a>
+            <a href="index.php?action=seConnecter"<?= $pageCourante === 'seConnecter' ? ' class="active" aria-current="page"' : '' ?>>Se connecter</a>
         </nav>
     </header>
         </nav>

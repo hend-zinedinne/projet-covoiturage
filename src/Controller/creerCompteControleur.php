@@ -56,14 +56,30 @@ function afficherCreerCompte(PDO $connexion): void
         if ($mdp === '') {
             $erreurs[] = "Le mot de passe est obligatoire.";
         }
-        if ($codeInscription !== strval(getCodeInscription($connexion)["code"])) {
+        if (getCodeInscription($connexion) === [] || getCodeInscription($connexion) === null) {
+            $erreurs[] = "Le service d'inscription est indisponible. Veuillez réessayer plus tard.";
+        }
+        elseif ($codeInscription !== strval(getCodeInscription($connexion))) {
             $erreurs[] = "Le code d'inscription est incorrect.";
         }
 
         // Insertion en base de données si validation OK
         if ($erreurs === []) {
             // appel au modèle pour insérer les données
-            insertEnseignant($connexion, $nom, $prenom, $email, $numTel, password_hash($mdp, PASSWORD_DEFAULT));
+            if (insertEnseignant($connexion, $nom, $prenom, $email, $numTel, password_hash($mdp, PASSWORD_DEFAULT)) === false) {
+                // en cas d'erreur lors de l'insertion, on revient
+                $erreurs[] = "Une erreur est arrivée lors de la création du compte. Veuillez réessayer plus tard.";
+                afficherVue("creerCompte/index", [
+                "title"  => "Créer votre compte",
+                "pageCourante" => "creerCompte",
+                "erreurs" => $erreurs,
+                "nom"    => $nom,
+                "prenom" => $prenom,
+                "email"  => $email,
+                "numTel" => $numTel,
+                "code" => $codeInscription,
+                 ]);
+            };
             // redirection vers la liste des films
             header('Location: index.php?action=bienvenue');
             exit();
@@ -82,8 +98,6 @@ function afficherCreerCompte(PDO $connexion): void
         "prenom" => $prenom,
         "email"  => $email,
         "numTel" => $numTel,
-        "mdp"    => $mdp,
-        "codeInscription"   => $codeInscription,
     ]);
 }
 
